@@ -1,3 +1,10 @@
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/product
+    username: babagl
+    password: babagl
+    driver-class-name: org.postgresql.Driver
   application:
    name: Product
+server:
+  port: 8050
