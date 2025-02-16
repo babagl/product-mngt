@@ -1,5 +1,6 @@
 package com.babagl.ecommerce.product;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,8 @@ public class ProductService {
 
 
     public Integer createProduct(ProductRequest request) {
-        return null;
+        var product = mapper.toProduct(request);
+        return repository.save(product).getId();
     }
 
     public List<ProductPurchaseResponse> purchaseProducts(List<ProductPurchaseRequest> request) {
@@ -24,7 +26,9 @@ public class ProductService {
     }
 
     public ProductResponse findById(Integer productId) {
-        return null;
+        return repository.findById(productId)
+                .map(mapper::toProductResponse)
+                .orElseThrow(()-> new EntityNotFoundException("Produit de l'id ::"+productId+"n'ont trouve"));
     }
 
     public List<ProductResponse> findAll() {
