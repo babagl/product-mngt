@@ -1,8 +1,11 @@
 package com.babagl.ecommerce.product;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -10,4 +13,33 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
     private final ProductService service;
+
+    @PostMapping
+    private ResponseEntity<Integer> createProduct(
+            @RequestBody @Valid ProductRequest request
+    ){
+        return ResponseEntity.ok(service.createProduct(request));
+    }
+
+    @PostMapping("/puchase")
+    public ResponseEntity<List<ProductPurchaseResponse>> purchaseProducts(
+            @RequestBody List<ProductPurchaseRequest> request
+    ){
+        return ResponseEntity.ok(service.purchaseProducts(request));
+    }
+
+    @GetMapping("{product_id}")
+    public ResponseEntity<ProductResponse> findById(
+            @PathVariable("product_id") Integer productId
+    ){
+        return ResponseEntity.ok(service.findById(productId));
+    }
+    /*
+    * Dont forget to add Pagination
+    * @return List ResponseProduct size page */
+    @GetMapping
+    public ResponseEntity<List<ProductResponse>> findAll(){
+        return ResponseEntity.ok(service.findAll());
+    }
+
 }
