@@ -1,11 +1,14 @@
 package com.babagl.ecommerce.product;
 
+import com.babagl.ecommerce.exception.ProductPurchaseException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +25,18 @@ public class ProductService {
     }
 
     public List<ProductPurchaseResponse> purchaseProducts(List<ProductPurchaseRequest> request) {
+        var productIds = request
+                .stream()
+                .map(ProductPurchaseRequest::productId)
+                .toList();
+        var storedProducts = repository.finAllByIdInOrderById(productIds);
+        if (productIds.size() != storedProducts.size()){
+            throw new ProductPurchaseException("Il y'as des produits qui n'existe pas");
+        }
+        var storedRequests = request
+                .stream()
+                .sorted(Comparator.comparing(ProductPurchaseRequest::productId))
+                .toList();
         return null;
     }
 
@@ -32,6 +47,9 @@ public class ProductService {
     }
 
     public List<ProductResponse> findAll() {
-        return null;
+        return repository.findAll()
+                .stream()
+                .map(mapper::toProductResponse)
+                .collect(Collectors.toList());
     }
 }
