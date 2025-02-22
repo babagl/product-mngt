@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class ProductService {
                 .stream()
                 .map(ProductPurchaseRequest::productId)
                 .toList();
-        var storedProducts = repository.finAllByIdInOrderById(productIds);
+        var storedProducts = repository.findAllByIdInOrderById(productIds);
         if (productIds.size() != storedProducts.size()){
             throw new ProductPurchaseException("Il y'as des produits qui n'existe pas");
         }
@@ -37,7 +38,19 @@ public class ProductService {
                 .stream()
                 .sorted(Comparator.comparing(ProductPurchaseRequest::productId))
                 .toList();
-        return null;
+        var purshasedProducts = new ArrayList<ProductPurchaseResponse>();
+        for(int i = 0; i < storedProducts.size(); i++){
+            var product = storedProducts.get(i);
+            var productRequest = storedRequests.get(i);
+            if (product.getAvailableQuantity() < productRequest.quantity()){
+                throw new ProductPurchaseException("La quantité disponible en stock est insuffisante. "+productRequest.productId());
+            }
+            var newAvalaibleQuantity = product.getAvailableQuantity() - productRequest.quantity();
+            product.setAvailableQuantity(newAvalaibleQuantity);
+            repository.save(product);
+            purshasedProducts.add(mapper.toProductPurchaseResponse(product, productRequest.quantity()));
+        }
+        return purshasedProducts;
     }
 
     public ProductResponse findById(Integer productId) {
