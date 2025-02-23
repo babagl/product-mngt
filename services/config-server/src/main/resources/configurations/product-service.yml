@@ -1,3 +1,5 @@
+server:
+  port: 8050
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -14,7 +16,6 @@ spring:
     enabled: true
     baseline-description: "init"
     baseline-version: 0
-    user: ${spring.datasource.password}
+    location: classpath:db/migration
+    user: ${spring.datasource.username}
     password: ${spring.datasource.password}
-server:
-  port: 8050

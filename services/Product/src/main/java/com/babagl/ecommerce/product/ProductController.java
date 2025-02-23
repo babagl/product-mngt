@@ -2,6 +2,8 @@ package com.babagl.ecommerce.product;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
 
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
     private final ProductService service;
 
     @PostMapping
@@ -39,6 +42,7 @@ public class ProductController {
     * @return List ResponseProduct size page */
     @GetMapping
     public ResponseEntity<List<ProductResponse>> findAll(){
+        log.info("Find all products######");
         return ResponseEntity.ok(service.findAll());
     }
 
