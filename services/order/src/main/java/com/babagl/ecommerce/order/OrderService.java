@@ -7,10 +7,11 @@ import com.babagl.ecommerce.kafka.OrderConfirmation;
 import com.babagl.ecommerce.kafka.OrderProducer;
 import com.babagl.ecommerce.orderline.OrderLineRequest;
 import com.babagl.ecommerce.orderline.OrderLineService;
+import com.babagl.ecommerce.payment.PaymentClient;
+import com.babagl.ecommerce.payment.PaymentRequest;
 import com.babagl.ecommerce.product.ProductClient;
 import com.babagl.ecommerce.product.PurchaseRequest;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,8 @@ public class OrderService {
     private final OrderMapper mapper;
     private final OrderLineService orderLineService;
     private final OrderProducer orderProducer;
+    private final PaymentClient paymentClient;
+
     public Integer createOrder(OrderRequest request) {
         //check the costumer --> OpenFeign;
         CustomerResponse customer = this.customerClient.findCustomerById(request.customerId())
@@ -52,8 +55,14 @@ public class OrderService {
         }
 
         //todo start payment process
-
-        //send the order confirmation
+        var paymentRequest = new PaymentRequest(
+                request.amount(),
+                request.paymentMethod(),
+                order.getId(),
+                order.getReference(),
+                customer
+        );
+        paymentClient.requestOrderPayment(paymentRequest);
 
         //send the order confirmation  --> notification-ms (kafka)
         orderProducer.sendOrderConfirmation(
