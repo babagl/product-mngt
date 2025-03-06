@@ -1,6 +1,6 @@
 package com.babagl.ecommerce.kafka.order;
 
-import com.babagl.ecommerce.kafka.payment.PaymentMethode;
+import com.babagl.ecommerce.kafka.payment.PaymentMethod;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
 public record OrderConfirmation(
         String orderReference,
         BigDecimal totalAmount,
-        PaymentMethode paymentMethode,
+        PaymentMethod paymentMethod,
         Customer customer,
         List<Product> products
 ) {
