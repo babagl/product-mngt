@@ -1,6 +1,6 @@
 package com.babagl.ecommerce.notification;
 
-import com.babagl.ecommerce.kafka.orde.OrderConfirmation;
+import com.babagl.ecommerce.kafka.order.OrderConfirmation;
 import com.babagl.ecommerce.kafka.payment.PaymentConfirmation;
 import lombok.*;
 import org.springframework.data.annotation.Id;
